@@ -32,7 +32,7 @@
 
 
 // Fonction de test pour la création et la gestion du Graphe
-void test_graph_operations() {
+/*void test_graph_operations() {
     std::cout << "=== Test: Création et Gestion du Graphe ===\n";
 
     Graph graph;
@@ -57,7 +57,7 @@ void test_graph_operations() {
         std::cout << neighbor << " ";
     }
     std::cout << "\n\n";
-}
+}*/
 
 // Fonction de test supplémentaire pour afficher les coordonnées cartésiennes des Vertex
 /*void test_vertex_coordinates() {
@@ -105,15 +105,91 @@ void test_graph_operations() {
               << v22.x << ", " << v22.y << ")\n\n";
 }*/
 
-int main() {
-    test_graph_operations();
-    //test_vertex_coordinates();
-    //test_vertex_coordinates_duplicate();
-   // touca();
-    return 0;
+void  mainBfs() {
+    Graph graph;
+
+    // Ajouter des sommets
+    graph.addVertex(Vertex(1, -76.929192819, 38.8924826094));
+    graph.addVertex(Vertex(2, -76.9296620544, 38.8925491793));
+    graph.addVertex(Vertex(3, -76.981166842, 38.9025611176));
+    graph.addVertex(Vertex(4, -77.1014062303, 38.924958382));
+
+    // Ajouter des arêtes
+    graph.addEdge(1, 2, 5.0);
+    graph.addEdge(2, 3, 7.0);
+    graph.addEdge(1, 3, 9.0);
+    graph.addEdge(3, 4, 2.0);
+
+    // Afficher le graphe
+    graph.printGraph();
+
+    // Trouver un chemin avec BFS
+    std::vector<int> path = graph.bfs(1, 4);
+    if (!path.empty()) {
+        std::cout << "Chemin trouvé avec BFS : ";
+        for (int vertexId : path) {
+            std::cout << vertexId << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Aucun chemin trouvé avec BFS." << std::endl;
+    }
+
 }
 
 
+void mainDijkstra() {
+    Graph graph;
 
+    // Ajouter des sommets
+    graph.addVertex(Vertex(1, -76.929192819, 38.8924826094));
+    graph.addVertex(Vertex(2, -76.9296620544, 38.8925491793));
+    graph.addVertex(Vertex(3, -76.981166842, 38.9025611176));
+    graph.addVertex(Vertex(4, -77.1014062303, 38.924958382));
+    graph.addVertex(Vertex(5, -77.0000000000, 38.9000000000));
+
+    // Ajouter des arêtes
+    graph.addEdge(1, 2, 1.0);
+    graph.addEdge(2, 3, 5.0);
+    graph.addEdge(1, 3, 2.0);  // Chemin plus direct mais plus lourd pour BFS
+    graph.addEdge(3, 4, 2.0);
+    graph.addEdge(1, 5, 10.0);
+    graph.addEdge(5, 4, 1.0);  // Chemin plus court pour Dijkstra
+
+    // Afficher le graphe
+    graph.printGraph();
+
+    // Trouver un chemin avec BFS
+    std::vector<int> bfsPath = graph.bfs(1, 4);
+    if (!bfsPath.empty()) {
+        std::cout << "Chemin trouvé avec BFS : ";
+        for (int vertexId : bfsPath) {
+            std::cout << vertexId << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Aucun chemin trouvé avec BFS." << std::endl;
+    }
+
+    // Trouver un chemin avec Dijkstra
+    std::vector<int> dijkstraPath = graph.dijkstra(1, 4);
+    if (!dijkstraPath.empty()) {
+        std::cout << "Chemin trouvé avec Dijkstra : ";
+        for (int vertexId : dijkstraPath) {
+            std::cout << vertexId << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Aucun chemin trouvé avec Dijkstra." << std::endl;
+    }
+
+}
+
+
+int main() {
+    mainBfs();
+    mainDijkstra();
+    return 0;
+}
 
 

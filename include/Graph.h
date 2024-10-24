@@ -1,8 +1,6 @@
 //
 // Created by caleb on 24/10/2024.
 //
-
-// include/Graph.h
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -13,19 +11,18 @@
 
 class Graph {
 public:
-    // Ajout de sommets et d'arêtes
     void addVertex(const Vertex& vertex);
     void addEdge(int sourceId, int destId, double weight);
 
-    // Récupérer les voisins d'un sommet donné
+    // Méthodes de recherche de chemin
+    std::vector<int> bfs(int startId, int endId);
+    std::vector<int> dijkstra(int startId, int endId);
     std::vector<int> getNeighbors(int vertexId) const;
-
-    // Pour afficher les informations du graphe (sommets et arêtes)
     void printGraph() const;
 
 private:
-    std::vector<Vertex> vertices;  // Liste des sommets
-    std::unordered_map<int, std::vector<Edge>> adjList;  // Liste d'adjacence
+    std::vector<Vertex> vertices;
+    std::unordered_map<int, std::vector<Edge>> adjList;
 };
 
 #endif // GRAPH_H
