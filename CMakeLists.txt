@@ -6,11 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 # Ajouter le répertoire include pour les fichiers d'en-tête
 include_directories(include)
 
-# Inclure les fichiers source du répertoire src
-file(GLOB SRC_FILES  src/*.cpp)
+# Inclure les fichiers source du répertoire src (sans inclure main.cpp)
+file(GLOB SRC_FILES src/CSVReader.cpp src/Vertex.cpp src/Graph.cpp)
 
-# Créer l'exécutable principal
+# Ne pas inclure src/main.cpp dans les tests
 add_executable(MapRoutingAlgorithms ${SRC_FILES} src/main.cpp)
+
 # --- Partie Google Test ---
 include(FetchContent)
 
@@ -39,10 +40,27 @@ file(GLOB_RECURSE TEST_FILES tests/*.cpp)
 # Créer un exécutable pour chaque fichier de test
 foreach(test_file ${TEST_FILES})
     get_filename_component(test_name ${test_file} NAME_WE)
-    add_executable(${test_name} ${test_file} ${SRC_FILES})  # Ne pas inclure src/main.cpp ici
 
-    target_link_libraries(${test_name} GTest::gtest_main)
+    # Créer une liste de fichiers sources nécessaires en fonction du nom du fichier de test
+    if (test_name MATCHES "test_graph")
+        set(SRC_FILES src/Graph.cpp src/Vertex.cpp)
+    elseif (test_name MATCHES "test_csv_reader")
+        set(SRC_FILES src/CSVReader.cpp src/Vertex.cpp)
+    else()
+        # Par défaut, inclure tous les fichiers sources pour d'autres tests
+        set(SRC_FILES src/*.cpp
+                tests/test_new_feature.cpp
+                tests/test_new_feature.cpp)
+    endif()
+
+    # Créer un exécutable unique pour chaque fichier de test
+    add_executable(${test_name}_exec ${test_file} ${SRC_FILES})
+
+    # Lier Google Test à chaque exécutable
+    target_link_libraries(${test_name}_exec GTest::gtest_main)
 
     # Découverte automatique des tests
-    gtest_discover_tests(${test_name})
+    gtest_discover_tests(${test_name}_exec)
 endforeach()
+
+
