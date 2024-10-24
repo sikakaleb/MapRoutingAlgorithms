@@ -6,6 +6,9 @@
 
 #include <vector>
 #include <unordered_map>
+#include <queue>
+#include <set>
+#include <cmath>  // Pour les calculs de distance
 #include "Vertex.h"
 #include "Edge.h"
 
@@ -17,12 +20,18 @@ public:
     // Méthodes de recherche de chemin
     std::vector<int> bfs(int startId, int endId);
     std::vector<int> dijkstra(int startId, int endId);
+    std::vector<int> a_star(int startId, int endId);  // Ajout de A*
+
     std::vector<int> getNeighbors(int vertexId) const;
     void printGraph() const;
 
 private:
     std::vector<Vertex> vertices;
     std::unordered_map<int, std::vector<Edge>> adjList;
+
+    // Méthode pour calculer la distance euclidienne entre deux sommets
+    double heuristicEuclidean(int sourceId, int destId) const;
 };
 
 #endif // GRAPH_H
+

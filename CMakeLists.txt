@@ -44,7 +44,8 @@ file(GLOB_RECURSE TEST_FILES tests/*.cpp)
 foreach(test_file ${TEST_FILES})
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file} ${SRC_FILES}
-            tests/test_mercator_projection.cpp)  # Ne pas inclure src/main.cpp ici
+            tests/test_mercator_projection.cpp
+            tests/test_cross_validation.cpp)  # Ne pas inclure src/main.cpp ici
 
     target_link_libraries(${test_name} GTest::gtest_main)
 

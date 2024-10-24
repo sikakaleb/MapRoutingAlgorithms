@@ -7,7 +7,7 @@
 
 // Test pour vérifier que les sommets sont bien lus à partir du CSV
 TEST(CSVReaderTest, CanReadVertices) {
-    CSVReader reader("../data/graph_dc_area.2022-03-11.csv"); // Assurez-vous que le chemin est correct
+    CSVReader reader("../data/csv/graph_dc_area.2022-03-11.csv"); // Assurez-vous que le chemin est correct
     std::vector<Vertex> vertices = reader.readVertices();
 
     // Vérifier qu'au moins un sommet a été lu

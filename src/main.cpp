@@ -186,9 +186,59 @@ void mainDijkstra() {
 }
 
 
+int mainAstar() {
+    Graph graph;
+
+    // Ajouter des sommets
+    graph.addVertex(Vertex(1, -76.929192819, 38.8924826094));
+    graph.addVertex(Vertex(2, -76.9296620544, 38.8925491793));
+    graph.addVertex(Vertex(3, -76.981166842, 38.9025611176));
+    graph.addVertex(Vertex(4, -77.1014062303, 38.924958382));
+    graph.addVertex(Vertex(5, -77.0000000000, 38.9000000000));
+
+    // Ajouter des arêtes avec des poids
+    graph.addEdge(1, 2, 1.0);
+    graph.addEdge(2, 3, 5.0);
+    graph.addEdge(1, 3, 2.0);  // Chemin plus direct mais plus lourd pour BFS
+    graph.addEdge(3, 4, 2.0);
+    graph.addEdge(1, 5, 10.0);
+    graph.addEdge(5, 4, 1.0);  // Chemin plus court pour Dijkstra
+
+    // Afficher le graphe
+    graph.printGraph();
+
+    // Trouver un chemin avec A*
+    std::vector<int> aStarPath = graph.a_star(1, 4);
+    if (!aStarPath.empty()) {
+        std::cout << "Chemin trouvé avec A* : ";
+        for (int vertexId : aStarPath) {
+            std::cout << vertexId << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Aucun chemin trouvé avec A*." << std::endl;
+    }
+
+    // Trouver un chemin avec Dijkstra
+    std::vector<int> dijkstraPath = graph.dijkstra(1, 4);
+    if (!dijkstraPath.empty()) {
+        std::cout << "Chemin trouvé avec Dijkstra : ";
+        for (int vertexId : dijkstraPath) {
+            std::cout << vertexId << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Aucun chemin trouvé avec Dijkstra." << std::endl;
+    }
+
+    return 0;
+}
+
+
 int main() {
     mainBfs();
     mainDijkstra();
+    mainAstar();
     return 0;
 }
 

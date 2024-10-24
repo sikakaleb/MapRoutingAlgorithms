@@ -23,6 +23,71 @@ void Graph::addEdge(int sourceId, int destId, double weight) {
     Edge edge(sourceId, destId, weight);
     adjList[sourceId].push_back(edge);
 }
+// Heuristique : distance euclidienne entre deux sommets
+double Graph::heuristicEuclidean(int sourceId, int destId) const {
+    const Vertex& source = vertices[sourceId - 1];  // Indices de 1 à n
+    const Vertex& dest = vertices[destId - 1];
+    double dx = dest.x - source.x;
+    double dy = dest.y - source.y;
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+// A* pour trouver le chemin le plus court en tenant compte de l'heuristique
+std::vector<int> Graph::a_star(int startId, int endId) {
+    std::unordered_map<int, double> gScore;  // Coût depuis le départ
+    std::unordered_map<int, double> fScore;  // Estimation de coût (g + heuristique)
+    std::unordered_map<int, int> parent;  // Garder la trace des parents
+    std::set<int> visited;
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> openSet;
+
+    // Initialisation des scores à l'infini
+    for (const auto& vertex : vertices) {
+        gScore[vertex.vertexId] = std::numeric_limits<double>::infinity();
+        fScore[vertex.vertexId] = std::numeric_limits<double>::infinity();
+    }
+
+    gScore[startId] = 0.0;
+    fScore[startId] = heuristicEuclidean(startId, endId);
+    openSet.push({fScore[startId], startId});
+    parent[startId] = -1;
+
+    while (!openSet.empty()) {
+        int current = openSet.top().second;
+        openSet.pop();
+
+        // Si on atteint le sommet de destination
+        if (current == endId) {
+            std::vector<int> path;
+            for (int at = endId; at != -1; at = parent[at]) {
+                path.push_back(at);
+            }
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
+
+        visited.insert(current);
+
+        // Pour chaque voisin
+        for (const Edge& edge : adjList[current]) {
+            int neighbor = edge.destId;
+
+            if (visited.find(neighbor) != visited.end()) {
+                continue;  // Ignorer les voisins déjà visités
+            }
+
+            double tentativeGScore = gScore[current] + edge.weight;
+            if (tentativeGScore < gScore[neighbor]) {
+                parent[neighbor] = current;
+                gScore[neighbor] = tentativeGScore;
+                fScore[neighbor] = tentativeGScore + heuristicEuclidean(neighbor, endId);
+                openSet.push({fScore[neighbor], neighbor});
+            }
+        }
+    }
+
+    // Si aucun chemin trouvé, retourner un vecteur vide
+    return std::vector<int>();
+}
 
 // Dijkstra pour trouver le chemin le plus court en termes de poids
 std::vector<int> Graph::dijkstra(int startId, int endId) {
