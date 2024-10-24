@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(include)
 
 # Inclure les fichiers source du répertoire src (sans inclure main.cpp)
-file(GLOB SRC_FILES src/CSVReader.cpp src/Vertex.cpp src/Graph.cpp)
+file(GLOB SRC_FILES src/*.cpp)
 list(REMOVE_ITEM SRC_FILES "${CMAKE_SOURCE_DIR}/src/main.cpp")  # Supprimer main.cpp des fichiers sources pour les tests
 
 
@@ -43,7 +43,8 @@ file(GLOB_RECURSE TEST_FILES tests/*.cpp)
 # Créer un exécutable pour chaque fichier de test, en excluant main.cpp
 foreach(test_file ${TEST_FILES})
     get_filename_component(test_name ${test_file} NAME_WE)
-    add_executable(${test_name} ${test_file} ${SRC_FILES})  # Ne pas inclure src/main.cpp ici
+    add_executable(${test_name} ${test_file} ${SRC_FILES}
+            tests/test_mercator_projection.cpp)  # Ne pas inclure src/main.cpp ici
 
     target_link_libraries(${test_name} GTest::gtest_main)
 
