@@ -8,6 +8,8 @@ include_directories(include)
 
 # Inclure les fichiers source du répertoire src (sans inclure main.cpp)
 file(GLOB SRC_FILES src/CSVReader.cpp src/Vertex.cpp src/Graph.cpp)
+list(REMOVE_ITEM SRC_FILES "${CMAKE_SOURCE_DIR}/src/main.cpp")  # Supprimer main.cpp des fichiers sources pour les tests
+
 
 # Ne pas inclure src/main.cpp dans les tests
 add_executable(MapRoutingAlgorithms ${SRC_FILES} src/main.cpp)
@@ -38,29 +40,37 @@ include(GoogleTest)
 file(GLOB_RECURSE TEST_FILES tests/*.cpp)
 
 # Créer un exécutable pour chaque fichier de test
+# Créer un exécutable pour chaque fichier de test, en excluant main.cpp
 foreach(test_file ${TEST_FILES})
     get_filename_component(test_name ${test_file} NAME_WE)
+    add_executable(${test_name} ${test_file} ${SRC_FILES})  # Ne pas inclure src/main.cpp ici
 
-    # Créer une liste de fichiers sources nécessaires en fonction du nom du fichier de test
-    if (test_name MATCHES "test_graph")
-        set(SRC_FILES src/Graph.cpp src/Vertex.cpp)
-    elseif (test_name MATCHES "test_csv_reader")
-        set(SRC_FILES src/CSVReader.cpp src/Vertex.cpp)
-    else()
-        # Par défaut, inclure tous les fichiers sources pour d'autres tests
-        set(SRC_FILES src/*.cpp
-                tests/test_new_feature.cpp
-                tests/test_new_feature.cpp)
-    endif()
-
-    # Créer un exécutable unique pour chaque fichier de test
-    add_executable(${test_name}_exec ${test_file} ${SRC_FILES})
-
-    # Lier Google Test à chaque exécutable
-    target_link_libraries(${test_name}_exec GTest::gtest_main)
+    target_link_libraries(${test_name} GTest::gtest_main)
 
     # Découverte automatique des tests
-    gtest_discover_tests(${test_name}_exec)
+    gtest_discover_tests(${test_name})
 endforeach()
+# foreach(test_file ${TEST_FILES})
+#     get_filename_component(test_name ${test_file} NAME_WE)
 
+#     # Créer une liste de fichiers sources nécessaires en fonction du nom du fichier de test
+#     if (test_name MATCHES "test_graph")
+#         set(SRC_FILES src/Graph.cpp src/Vertex.cpp
+#                 src/Edge.cpp)
+#     elseif (test_name MATCHES "test_csv_reader")
+#         set(SRC_FILES src/CSVReader.cpp src/Vertex.cpp
+#                 src/Edge.cpp)
+#     else()
+#         # Par défaut, inclure tous les fichiers sources pour d'autres tests
+#         set(SRC_FILES src/*.cpp)
+#     endif()
 
+#     # Créer un exécutable unique pour chaque fichier de test
+#     add_executable(${test_name}_exec ${test_file} ${SRC_FILES})
+
+#     # Lier Google Test à chaque exécutable
+#     target_link_libraries(${test_name}_exec GTest::gtest_main)
+
+#     # Découverte automatique des tests
+#     gtest_discover_tests(${test_name}_exec)
+# endforeach()

@@ -3,3 +3,5 @@
 //
 
 #include "Edge.h"
+
+// Constructeur pour initialiser l'arête avec ses paramètres
