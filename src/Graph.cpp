@@ -11,26 +11,50 @@
 #include <vector>
 #include <limits>
 #include <algorithm>  // Pour std::reverse
+#include "Vertex.h"
+#include "cmath"
+
 
 // Ajout de sommet
 void Graph::addVertex(const Vertex& vertex) {
-    vertices.push_back(vertex);
-    adjList[vertex.vertexId] = std::vector<Edge>();
+    vertices[vertex.vertexId] = vertex;  // Ajouter le sommet dans la map avec son vertexId
+    adjList[vertex.vertexId] = std::vector<Edge>();  // Initialiser la liste d'adjacence pour ce sommet
 }
+
 
 // Ajout d'arête
 void Graph::addEdge(int sourceId, int destId, double weight) {
+    // Ajoutez le sommet source s'il n'existe pas déjà
+    if (vertices.find(sourceId) == vertices.end()) {
+        vertices[sourceId] = Vertex(sourceId, 0.0, 0.0);  // Positions par défaut
+    }
+    // Ajoutez le sommet destination s'il n'existe pas déjà
+    if (vertices.find(destId) == vertices.end()) {
+        vertices[destId] = Vertex(destId, 0.0, 0.0);
+    }
+    // Ajoutez l'arête
     Edge edge(sourceId, destId, weight);
     adjList[sourceId].push_back(edge);
 }
-// Heuristique : distance euclidienne entre deux sommets
+
+
 double Graph::heuristicEuclidean(int sourceId, int destId) const {
-    const Vertex& source = vertices[sourceId - 1];  // Indices de 1 à n
-    const Vertex& dest = vertices[destId - 1];
+    // Vérifier que les sommets existent dans la map
+    auto itSource = vertices.find(sourceId);
+    auto itDest = vertices.find(destId);
+
+    if (itSource == vertices.end() || itDest == vertices.end()) {
+        std::cerr << "Erreur : sommet non trouvé (sourceId: " << sourceId << ", destId: " << destId << ")" << std::endl;
+        return std::numeric_limits<double>::infinity();
+    }
+
+    const Vertex& source = itSource->second;
+    const Vertex& dest = itDest->second;
     double dx = dest.x - source.x;
     double dy = dest.y - source.y;
     return std::sqrt(dx * dx + dy * dy);
 }
+
 
 // A* pour trouver le chemin le plus court en tenant compte de l'heuristique
 std::vector<int> Graph::a_star(int startId, int endId) {
@@ -41,9 +65,9 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> openSet;
 
     // Initialisation des scores à l'infini
-    for (const auto& vertex : vertices) {
-        gScore[vertex.vertexId] = std::numeric_limits<double>::infinity();
-        fScore[vertex.vertexId] = std::numeric_limits<double>::infinity();
+    for (const auto& [id, vertex] : vertices) {
+        gScore[id] = std::numeric_limits<double>::infinity();
+        fScore[id] = std::numeric_limits<double>::infinity();
     }
 
     gScore[startId] = 0.0;
@@ -89,6 +113,7 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     return std::vector<int>();
 }
 
+
 // Dijkstra pour trouver le chemin le plus court en termes de poids
 std::vector<int> Graph::dijkstra(int startId, int endId) {
     std::unordered_map<int, double> distances;  // Distances à partir du sommet de départ
@@ -97,8 +122,8 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> minHeap;
 
     // Initialisation des distances à l'infini, sauf pour le sommet de départ
-    for (const auto& vertex : vertices) {
-        distances[vertex.vertexId] = std::numeric_limits<double>::infinity();
+    for (const auto& [id, vertex] : vertices) {
+        distances[id] = std::numeric_limits<double>::infinity();
     }
     distances[startId] = 0;
     parent[startId] = -1;
@@ -141,6 +166,7 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
     return std::vector<int>();
 }
 
+
 // BFS pour comparer
 std::vector<int> Graph::bfs(int startId, int endId) {
     std::queue<int> toVisit;
@@ -177,6 +203,7 @@ std::vector<int> Graph::bfs(int startId, int endId) {
     return std::vector<int>();
 }
 
+
 std::vector<int> Graph::getNeighbors(int vertexId) const {
     std::vector<int> neighbors;
     // Récupérer les arêtes du sommet donné et extraire les identifiants des sommets voisins
@@ -191,13 +218,17 @@ std::vector<int> Graph::getNeighbors(int vertexId) const {
 
 
 void Graph::printGraph() const {
-    for (const auto& vertex : vertices) {
+    for (const auto& [vertexId, vertex] : vertices) {
         std::cout << "Vertex ID: " << vertex.vertexId
                   << " (" << vertex.longitude << ", " << vertex.latitude << ")\n";
         std::cout << "  Neighbors: ";
-        for (const auto& edge : adjList.at(vertex.vertexId)) {
+        for (const auto& edge : adjList.at(vertexId)) {
             std::cout << edge.destId << " (Weight: " << edge.weight << "), ";
         }
         std::cout << std::endl;
     }
+}
+
+bool Graph::hasVertex(int vertexId) const {
+    return vertices.find(vertexId) != vertices.end();
 }

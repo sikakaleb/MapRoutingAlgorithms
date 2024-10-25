@@ -10,18 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <array>
-
-// Fonction pour exécuter un script Python et récupérer les résultats
-std::string exec(const std::string& cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) throw std::runtime_error("Erreur lors de l'exécution du script Python");
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
-}
+#include "utils.h"  // Inclure l'en-tête avec la fonction exec()
 
 // Test pour comparer la conversion Mercator avec Python via pyproj
 TEST(MercatorProjectionTest, CompareWithPyProj) {

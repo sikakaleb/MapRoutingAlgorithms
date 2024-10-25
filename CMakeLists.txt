@@ -12,7 +12,8 @@ list(REMOVE_ITEM SRC_FILES "${CMAKE_SOURCE_DIR}/src/main.cpp")  # Supprimer main
 
 
 # Ne pas inclure src/main.cpp dans les tests
-add_executable(MapRoutingAlgorithms ${SRC_FILES} src/main.cpp)
+add_executable(MapRoutingAlgorithms ${SRC_FILES} src/main.cpp
+        include/utils.h)
 
 # --- Partie Google Test ---
 include(FetchContent)
@@ -45,7 +46,8 @@ foreach(test_file ${TEST_FILES})
     get_filename_component(test_name ${test_file} NAME_WE)
     add_executable(${test_name} ${test_file} ${SRC_FILES}
             tests/test_mercator_projection.cpp
-            tests/test_cross_validation.cpp)  # Ne pas inclure src/main.cpp ici
+            tests/test_cross_validation.cpp
+            include/utils.h)  # Ne pas inclure src/main.cpp ici
 
     target_link_libraries(${test_name} GTest::gtest_main)
 

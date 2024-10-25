@@ -24,9 +24,10 @@ public:
 
     std::vector<int> getNeighbors(int vertexId) const;
     void printGraph() const;
+    bool hasVertex(int vertexId) const;
 
 private:
-    std::vector<Vertex> vertices;
+    std::unordered_map<int, Vertex> vertices;  // Utiliser unordered_map pour stocker les sommets par vertexId
     std::unordered_map<int, std::vector<Edge>> adjList;
 
     // Méthode pour calculer la distance euclidienne entre deux sommets
