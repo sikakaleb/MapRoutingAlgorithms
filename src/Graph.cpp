@@ -13,6 +13,7 @@
 #include <algorithm>  // Pour std::reverse
 #include "Vertex.h"
 #include "cmath"
+#include <unordered_set>
 
 
 // Ajout de sommet
@@ -39,7 +40,6 @@ void Graph::addEdge(int sourceId, int destId, double weight) {
 
 
 double Graph::heuristicEuclidean(int sourceId, int destId) const {
-    // Vérifier que les sommets existent dans la map
     auto itSource = vertices.find(sourceId);
     auto itDest = vertices.find(destId);
 
@@ -50,8 +50,8 @@ double Graph::heuristicEuclidean(int sourceId, int destId) const {
 
     const Vertex& source = itSource->second;
     const Vertex& dest = itDest->second;
-    double dx = dest.x - source.x;
-    double dy = dest.y - source.y;
+    double dx = dest.longitude - source.longitude;
+    double dy = dest.latitude - source.latitude;
     return std::sqrt(dx * dx + dy * dy);
 }
 
@@ -60,16 +60,14 @@ double Graph::heuristicEuclidean(int sourceId, int destId) const {
 std::vector<int> Graph::a_star(int startId, int endId) {
     std::unordered_map<int, double> gScore;  // Coût depuis le départ
     std::unordered_map<int, double> fScore;  // Estimation de coût (g + heuristique)
-    std::unordered_map<int, int> parent;  // Garder la trace des parents
-    std::set<int> visited;
+    std::unordered_map<int, int> parent;     // Garder la trace des parents pour la reconstruction du chemin
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> openSet;
 
-    // Initialisation des scores à l'infini
+    // Initialisation
     for (const auto& [id, vertex] : vertices) {
         gScore[id] = std::numeric_limits<double>::infinity();
         fScore[id] = std::numeric_limits<double>::infinity();
     }
-
     gScore[startId] = 0.0;
     fScore[startId] = heuristicEuclidean(startId, endId);
     openSet.push({fScore[startId], startId});
@@ -80,7 +78,7 @@ std::vector<int> Graph::a_star(int startId, int endId) {
         openSet.pop();
         totalVisitedNodes++;
 
-        // Si on atteint le sommet de destination
+        // Si nous avons atteint le nœud cible
         if (current == endId) {
             std::vector<int> path;
             for (int at = endId; at != -1; at = parent[at]) {
@@ -90,17 +88,11 @@ std::vector<int> Graph::a_star(int startId, int endId) {
             return path;
         }
 
-        visited.insert(current);
-
-        // Pour chaque voisin
         for (const Edge& edge : adjList[current]) {
             int neighbor = edge.destId;
-
-            if (visited.find(neighbor) != visited.end()) {
-                continue;  // Ignorer les voisins déjà visités
-            }
-
             double tentativeGScore = gScore[current] + edge.weight;
+
+            // Mise à jour des scores si un meilleur chemin est trouvé
             if (tentativeGScore < gScore[neighbor]) {
                 parent[neighbor] = current;
                 gScore[neighbor] = tentativeGScore;
@@ -110,34 +102,34 @@ std::vector<int> Graph::a_star(int startId, int endId) {
         }
     }
 
-    // Si aucun chemin trouvé, retourner un vecteur vide
+    // Aucun chemin trouvé
     return std::vector<int>();
 }
 
 
 // Dijkstra pour trouver le chemin le plus court en termes de poids
 std::vector<int> Graph::dijkstra(int startId, int endId) {
-    std::unordered_map<int, double> distances;  // Distances à partir du sommet de départ
-    std::unordered_map<int, int> parent;  // Garder la trace des parents pour reconstruire le chemin
-    std::set<int> visited;  // Marquer les sommets visités
+    std::unordered_map<int, double> distances;
+    std::unordered_map<int, int> parent;
+    std::unordered_set<int> visited;
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> minHeap;
 
-    // Initialisation des distances à l'infini, sauf pour le sommet de départ
     for (const auto& [id, vertex] : vertices) {
         distances[id] = std::numeric_limits<double>::infinity();
     }
     distances[startId] = 0;
     parent[startId] = -1;
 
-    // Ajouter le sommet de départ à la file de priorité
     minHeap.push({0, startId});
 
     while (!minHeap.empty()) {
         int current = minHeap.top().second;
         minHeap.pop();
+
+        if (visited.find(current) != visited.end()) continue; // Ignorer si déjà visité
+        visited.insert(current);
         totalVisitedNodes++;
 
-        // Si nous avons atteint le sommet d'arrivée
         if (current == endId) {
             std::vector<int> path;
             for (int at = endId; at != -1; at = parent[at]) {
@@ -147,15 +139,10 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
             return path;
         }
 
-        // Marquer le sommet comme visité
-        visited.insert(current);
-
-        // Pour chaque voisin
         for (const Edge& edge : adjList[current]) {
             int neighbor = edge.destId;
             double newDist = distances[current] + edge.weight;
 
-            // Si le voisin n'a pas été visité et qu'une meilleure distance est trouvée
             if (visited.find(neighbor) == visited.end() && newDist < distances[neighbor]) {
                 distances[neighbor] = newDist;
                 parent[neighbor] = current;
@@ -164,16 +151,16 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
         }
     }
 
-    // Si aucun chemin trouvé, retourner un vecteur vide
     return std::vector<int>();
 }
+
 
 
 // BFS pour comparer
 std::vector<int> Graph::bfs(int startId, int endId) {
     std::queue<int> toVisit;
     std::unordered_map<int, int> parent;
-    std::set<int> visited;
+    std::unordered_set<int> visited;
 
     toVisit.push(startId);
     visited.insert(startId);
@@ -205,6 +192,7 @@ std::vector<int> Graph::bfs(int startId, int endId) {
 
     return std::vector<int>();
 }
+
 
 
 std::vector<int> Graph::getNeighbors(int vertexId) const {
