@@ -61,9 +61,10 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     std::unordered_map<int, double> gScore;  // Coût depuis le départ
     std::unordered_map<int, double> fScore;  // Estimation de coût (g + heuristique)
     std::unordered_map<int, int> parent;     // Garder la trace des parents pour la reconstruction du chemin
+    std::unordered_set<int> closedSet;       // Ensemble des nœuds visités
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> openSet;
 
-    // Initialisation
+    // Initialisation des scores
     for (const auto& [id, vertex] : vertices) {
         gScore[id] = std::numeric_limits<double>::infinity();
         fScore[id] = std::numeric_limits<double>::infinity();
@@ -76,6 +77,13 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     while (!openSet.empty()) {
         int current = openSet.top().second;
         openSet.pop();
+
+        // Si le nœud est déjà dans closedSet, on le saute
+        if (closedSet.find(current) != closedSet.end()) {
+            continue;
+        }
+
+        closedSet.insert(current);
         totalVisitedNodes++;
 
         // Si nous avons atteint le nœud cible
@@ -88,11 +96,17 @@ std::vector<int> Graph::a_star(int startId, int endId) {
             return path;
         }
 
+        // Parcourir les voisins
         for (const Edge& edge : adjList[current]) {
             int neighbor = edge.destId;
             double tentativeGScore = gScore[current] + edge.weight;
 
-            // Mise à jour des scores si un meilleur chemin est trouvé
+            // Si le voisin a déjà été exploré, on l'ignore
+            if (closedSet.find(neighbor) != closedSet.end()) {
+                continue;
+            }
+
+            // Mettre à jour les scores si un meilleur chemin est trouvé
             if (tentativeGScore < gScore[neighbor]) {
                 parent[neighbor] = current;
                 gScore[neighbor] = tentativeGScore;
@@ -105,6 +119,7 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     // Aucun chemin trouvé
     return std::vector<int>();
 }
+
 
 
 // Dijkstra pour trouver le chemin le plus court en termes de poids
