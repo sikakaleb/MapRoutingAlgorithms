@@ -27,6 +27,7 @@ public:
     bool hasVertex(int vertexId) const;
     double getEdgeWeight(int sourceId, int destId) const;
     int getTotalVisitedNodes() const;
+    void resetVisitedNodes();
 
     // Nouvelle méthode pour obtenir un sommet par son ID
     const Vertex& getVertex(int vertexId) const;

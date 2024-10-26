@@ -40,18 +40,19 @@ void Graph::addEdge(int sourceId, int destId, double weight) {
 
 
 double Graph::heuristicEuclidean(int sourceId, int destId) const {
+    // Vérifier que les sommets existent dans la map
     auto itSource = vertices.find(sourceId);
     auto itDest = vertices.find(destId);
 
     if (itSource == vertices.end() || itDest == vertices.end()) {
-        std::cerr << "Erreur : sommet non trouvé (sourceId: " << sourceId << ", destId: " << destId << ")" << std::endl;
+        //std::cerr << "Erreur : sommet non trouvé (sourceId: " << sourceId << ", destId: " << destId << ")" << std::endl;
         return std::numeric_limits<double>::infinity();
     }
 
     const Vertex& source = itSource->second;
     const Vertex& dest = itDest->second;
-    double dx = dest.longitude - source.longitude;
-    double dy = dest.latitude - source.latitude;
+    double dx = dest.x - source.x;
+    double dy = dest.y - source.y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
@@ -61,10 +62,9 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     std::unordered_map<int, double> gScore;  // Coût depuis le départ
     std::unordered_map<int, double> fScore;  // Estimation de coût (g + heuristique)
     std::unordered_map<int, int> parent;     // Garder la trace des parents pour la reconstruction du chemin
-    std::unordered_set<int> closedSet;       // Ensemble des nœuds visités
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<>> openSet;
 
-    // Initialisation des scores
+    // Initialisation
     for (const auto& [id, vertex] : vertices) {
         gScore[id] = std::numeric_limits<double>::infinity();
         fScore[id] = std::numeric_limits<double>::infinity();
@@ -77,17 +77,13 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     while (!openSet.empty()) {
         int current = openSet.top().second;
         openSet.pop();
-
-        // Si le nœud est déjà dans closedSet, on le saute
-        if (closedSet.find(current) != closedSet.end()) {
-            continue;
-        }
-
-        closedSet.insert(current);
-        totalVisitedNodes++;
+        totalVisitedNodes++;  // Incrémenter le compteur de nœuds visités
 
         // Si nous avons atteint le nœud cible
         if (current == endId) {
+            //std::cout << "Total visited nodes: " << totalVisitedNodes << std::endl;  // Affiche le nombre total de nœuds visités
+
+            // Reconstruction du chemin
             std::vector<int> path;
             for (int at = endId; at != -1; at = parent[at]) {
                 path.push_back(at);
@@ -96,17 +92,12 @@ std::vector<int> Graph::a_star(int startId, int endId) {
             return path;
         }
 
-        // Parcourir les voisins
+        // Exploration des voisins
         for (const Edge& edge : adjList[current]) {
             int neighbor = edge.destId;
             double tentativeGScore = gScore[current] + edge.weight;
 
-            // Si le voisin a déjà été exploré, on l'ignore
-            if (closedSet.find(neighbor) != closedSet.end()) {
-                continue;
-            }
-
-            // Mettre à jour les scores si un meilleur chemin est trouvé
+            // Mise à jour des scores si un meilleur chemin est trouvé
             if (tentativeGScore < gScore[neighbor]) {
                 parent[neighbor] = current;
                 gScore[neighbor] = tentativeGScore;
@@ -117,9 +108,9 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     }
 
     // Aucun chemin trouvé
+    std::cout << "Total visited nodes: " << totalVisitedNodes << std::endl;  // Affiche le nombre total de nœuds visités si aucun chemin trouvé
     return std::vector<int>();
 }
-
 
 
 // Dijkstra pour trouver le chemin le plus court en termes de poids
@@ -175,7 +166,7 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
 std::vector<int> Graph::bfs(int startId, int endId) {
     std::queue<int> toVisit;
     std::unordered_map<int, int> parent;
-    std::unordered_set<int> visited;
+    std::set<int> visited;
 
     toVisit.push(startId);
     visited.insert(startId);
@@ -207,7 +198,6 @@ std::vector<int> Graph::bfs(int startId, int endId) {
 
     return std::vector<int>();
 }
-
 
 
 std::vector<int> Graph::getNeighbors(int vertexId) const {
@@ -262,4 +252,8 @@ double Graph::getEdgeWeight(int sourceId, int destId) const {
     }
     // Si l'arête n'existe pas, retourner une valeur négative ou lever une exception
     return -1.0;
+}
+
+void Graph::resetVisitedNodes() {
+    totalVisitedNodes = 0;
 }

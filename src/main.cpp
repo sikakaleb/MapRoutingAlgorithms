@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include "CSVReader.h"
+#include <chrono>  // Inclure chrono pour mesurer le temps d'exécution
 
 int main(int argc, char* argv[]) {
     // Vérifier le nombre minimum d'arguments
@@ -73,6 +74,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Mesurer le temps d'exécution de l'algorithme
+    auto startTime = std::chrono::steady_clock::now();  // Temps de début
+
     // Exécuter l'algorithme choisi
     std::vector<int> path;
     if (algorithm == "bfs") {
@@ -84,6 +88,18 @@ int main(int argc, char* argv[]) {
     } else {
         std::cerr << "Algorithme inconnu : " << algorithm << ". Choisissez parmi 'bfs', 'dijkstra', 'astar'." << std::endl;
         return 1;
+    }
+
+    // Mesurer le temps de fin et calculer la durée
+    auto endTime = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+
+    // Afficher le temps d'exécution
+    std::cout << "Temps d'exécution de l'algorithme " << algorithm << ": " << duration << " ms" << std::endl;
+
+    // Vérifier si le temps d'exécution dépasse 1 seconde
+    if (duration > 1000) {
+        std::cerr << "Avertissement : Le temps d'exécution a dépassé 1 seconde !" << std::endl;
     }
 
     // Vérifier si un chemin a été trouvé

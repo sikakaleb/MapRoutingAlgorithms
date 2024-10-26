@@ -28,7 +28,7 @@ TEST(CSVReaderTest, CanReadVertices) {
 TEST(CSVReaderTest, CanReadFirst30Vertices) {
     // Utiliser un bloc try-catch pour capturer les erreurs d'ouverture de fichier
     try {
-        CSVReader reader(".../data/csv/graph_dc_area.2022-03-11.csv");  // Assurez-vous que le chemin est correct
+        CSVReader reader("../data/csv/graph_dc_area.2022-03-11.csv");  // Assurez-vous que le chemin est correct
         std::vector<Vertex> vertices = reader.readVertices();
 
         ASSERT_GE(vertices.size(), 30);  // S'assurer que le fichier contient au moins 30 sommets
