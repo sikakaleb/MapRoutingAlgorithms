@@ -15,6 +15,9 @@ list(REMOVE_ITEM SRC_FILES "${CMAKE_SOURCE_DIR}/src/main.cpp")  # Supprimer main
 add_executable(MapRoutingAlgorithms ${SRC_FILES} src/main.cpp
         include/utils.h)
 
+add_executable(graph_traversal ${SRC_FILES} src/main.cpp)
+
+
 # --- Partie Google Test ---
 include(FetchContent)
 

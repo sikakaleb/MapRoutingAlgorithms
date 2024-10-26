@@ -78,6 +78,7 @@ std::vector<int> Graph::a_star(int startId, int endId) {
     while (!openSet.empty()) {
         int current = openSet.top().second;
         openSet.pop();
+        totalVisitedNodes++;
 
         // Si on atteint le sommet de destination
         if (current == endId) {
@@ -134,6 +135,7 @@ std::vector<int> Graph::dijkstra(int startId, int endId) {
     while (!minHeap.empty()) {
         int current = minHeap.top().second;
         minHeap.pop();
+        totalVisitedNodes++;
 
         // Si nous avons atteint le sommet d'arrivée
         if (current == endId) {
@@ -180,6 +182,7 @@ std::vector<int> Graph::bfs(int startId, int endId) {
     while (!toVisit.empty()) {
         int current = toVisit.front();
         toVisit.pop();
+        totalVisitedNodes++;
 
         if (current == endId) {
             std::vector<int> path;
@@ -231,4 +234,29 @@ void Graph::printGraph() const {
 
 bool Graph::hasVertex(int vertexId) const {
     return vertices.find(vertexId) != vertices.end();
+}
+
+// Graph.cpp
+
+// ...
+
+int Graph::getTotalVisitedNodes() const {
+    return totalVisitedNodes;
+}
+
+const Vertex& Graph::getVertex(int vertexId) const {
+    return vertices.at(vertexId);
+}
+
+double Graph::getEdgeWeight(int sourceId, int destId) const {
+    auto it = adjList.find(sourceId);
+    if (it != adjList.end()) {
+        for (const Edge& edge : it->second) {
+            if (edge.destId == destId) {
+                return edge.weight;
+            }
+        }
+    }
+    // Si l'arête n'existe pas, retourner une valeur négative ou lever une exception
+    return -1.0;
 }

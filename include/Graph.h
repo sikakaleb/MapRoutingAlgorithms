@@ -25,13 +25,22 @@ public:
     std::vector<int> getNeighbors(int vertexId) const;
     void printGraph() const;
     bool hasVertex(int vertexId) const;
+    double getEdgeWeight(int sourceId, int destId) const;
+    int getTotalVisitedNodes() const;
+
+    // Nouvelle méthode pour obtenir un sommet par son ID
+    const Vertex& getVertex(int vertexId) const;
+
 
 private:
     std::unordered_map<int, Vertex> vertices;  // Utiliser unordered_map pour stocker les sommets par vertexId
     std::unordered_map<int, std::vector<Edge>> adjList;
+    int totalVisitedNodes = 0;
+
 
     // Méthode pour calculer la distance euclidienne entre deux sommets
     double heuristicEuclidean(int sourceId, int destId) const;
+
 };
 
 #endif // GRAPH_H
