@@ -20,7 +20,7 @@ Pour exécuter et développer le projet **Map Path Finder**, les bibliothèques 
 - **CMake** : pour la gestion de la construction du projet.
 - **Google Test** : pour l'exécution des tests unitaires, permettant de vérifier les performances et la robustesse des algorithmes.
 - **Qt** : pour la création de l'interface graphique (si l’interface graphique est incluse).
-- **Proj (PROJ.4)** : bibliothèque de conversion de coordonnées géographiques pour la gestion des projections cartographiques.
+- **Proj (PROJ.4)** : (utilisée juste pour l'evaluation croisée) bibliothèque de conversion de coordonnées géographiques pour la gestion des projections cartographiques.
 - **Compilateur C++17** : compatible avec la version C++17 pour compiler les sources (par exemple, GCC ou Clang).
 
 ### Instructions pour installer les dépendances
