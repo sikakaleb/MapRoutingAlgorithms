@@ -1,4 +1,4 @@
-# Prerequisites
+# C++ Prerequisites
 *.d
 
 # Compiled Object files
@@ -30,3 +30,59 @@
 *.exe
 *.out
 *.app
+
+# CMake generated files
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+
+# CLion specific files
+.idea/
+*.iml
+
+# Qt specific files
+*.moc
+*.qrc
+*.qmlc
+*.qrc.depends
+*.pro.user*
+*.pro.user.*
+*.qmake.stash
+*.qmake.cache
+*.qmake.*
+
+# Build directories
+build/
+bin/
+lib/
+
+# Test binary output
+/tests/*.exe
+/tests/*.out
+/tests/*.o
+
+# Logs and debug files
+*.log
+*.tlog
+*.dmp
+*.stackdump
+*.tmp
+*.temp
+*.swp
+
+# System files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Backup files
+*.bak
+*.old
+*.orig
+*.save
+*~
+
+# CSV and Data Files (optionnel, à commenter si vous voulez versionner les fichiers CSV)
+#*.csv
